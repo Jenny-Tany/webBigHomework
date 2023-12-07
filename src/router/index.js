@@ -21,6 +21,16 @@ const router = createRouter({
 			path: "/cart",
 			name: "Cart",
 			component: () => import("@/views/cartList/index.vue"),
+		},
+		{
+			path: "/order",
+			name: "Order",
+			component: () => import("@/views/orderList/index.vue"),
+		},
+		{
+			path: "/pay",
+			name: "Pay",
+			component: () => import("@/views/orderList/pay.vue"),
 		}
 	],
 	//路由滚动行为定制,目的是每次切换路由的时候,让页面滚动到顶部

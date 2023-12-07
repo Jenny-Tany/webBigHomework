@@ -124,6 +124,11 @@ export const useCartStore = defineStore(
 			}, 0); // 设置初始值为0,也就是第一次迭代时,total=0,然后item从index=0处开始
 		});
 
+		// 所有选中的商品
+		const selectedGoods = computed(() => {
+			return cartList.value.filter((item) => item.selected) // 过滤出选中的商品,返回数组
+		})
+
 		return {
 			huoQuGouWuChe,
 			addCart,
@@ -136,6 +141,7 @@ export const useCartStore = defineStore(
 			totalPrice,
 			singleCheck,
 			allCheck,
+			selectedGoods
 		};
 	},
 	{
