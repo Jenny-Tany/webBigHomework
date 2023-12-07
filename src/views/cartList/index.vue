@@ -77,8 +77,7 @@
 		console.log(`orderres::${res}`);
 	}
 	const toOrder = () => {
-		console.log(111);
-		console.log(selectedGoods.value);
+		console.log(`selectedGoods::${selectedGoods.value}`);
 		createOrder()
 		ElMessage({
   		  message: '成功生成订单',

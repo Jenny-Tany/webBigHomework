@@ -1,9 +1,46 @@
 <script setup>
+import {ref} from 'vue'
 import { useRouter } from 'vue-router'
+import { orderListAPI } from "@/apis/order"
+import { useUserStore } from "@/stores/user";
+
 const checkInfo = {}  // 订单对象
 const curAddress = {}  // 地址对象
+const userStore = useUserStore();
 
 const router = useRouter()
+// 总计订单商品数量和价格
+const allCount = ref()
+const totalPrice = ref()
+
+const orderListShow = ref({
+    goodsName: [],
+    count: [],
+    price: []
+})
+// 获取用户id
+const userId = userStore.userInfo;
+// 获取订单列表
+const orderLists = async () => {
+    const res = await orderListAPI({ userId })
+    console.log(111);
+    console.log(res);
+    res.forEach((item) => {
+        item.orderDetail.forEach((detail) => {
+            orderListShow.value.goodsName.push(detail.goodsName)
+            orderListShow.value.count.push(detail.nums.split(',')[0].trim())
+            orderListShow.value.price.push(detail.nums.split(',')[1].split('=')[1])
+        })
+    });
+    allCount.value = orderListShow.value.count.reduce((total, num) => total + parseFloat(num), 0)
+    totalPrice.value = orderListShow.value.price.reduce((total, num) => total + parseFloat(num), 0)
+    
+    console.log(`goodsName::${orderListShow.value.goodsName}`);
+    console.log(`goodsCount::${orderListShow.value.count}`);
+    console.log(`goodsPrice::${orderListShow.value.price}`);
+    console.log(res[0].orderDetail[0].goodsName);
+}
+orderLists()
 const submitOrder = () => {
     ElMessage({
   		message: '提交订单成功',
@@ -12,6 +49,7 @@ const submitOrder = () => {
     console.log(111);
     router.push({path: "/pay"})
 }
+
 </script>
 
 <template>
@@ -27,24 +65,27 @@ const submitOrder = () => {
                 <th width="520">商品信息</th>
                 <th width="170">单价</th>
                 <th width="170">数量</th>
-                <th width="170">小计</th>
+                <!-- <th width="170">小计</th> -->
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="i in checkInfo.goods" :key="i.id">
+            <tbody  >
+              <tr>
                 <td>
                   <a href="javascript:;" class="info">
-                    <img :src="i.picture" alt="">
                     <div class="right">
-                      <p>{{ i.name }}</p>
-                      <p>{{ i.attrsText }}</p>
+                      <p v-for="i in orderListShow.goodsName" :key="i.id">{{ i }}</p>
                     </div>
                   </a>
                 </td>
-                <td>&yen;{{ i.price }}</td>
-                <td>{{ i.price }}</td>
-                <td>&yen;{{ i.totalPrice }}</td>
-                <td>&yen;{{ i.totalPayPrice }}</td>
+                <td>
+                    <p v-for="p in orderListShow.price">&yen;{{ p }}</p>
+                </td>
+                <td>
+                    <p  v-for="cnt in orderListShow.count">{{ cnt }}</p>
+                </td>
+
+                <!-- <td>&yen;{{ i.totalPrice }}</td> -->
+                <!-- <td>&yen;{{ i.totalPayPrice }}</td> -->
               </tr>
             </tbody>
           </table>
@@ -69,15 +110,15 @@ const submitOrder = () => {
           <div class="total">
             <dl>
               <dt>商品件数：</dt>
-              <dd>{{ checkInfo.summary?.goodsCount }}件</dd>
+              <dd>{{ allCount }}件</dd>
             </dl>
             <dl>
               <dt>商品总价：</dt>
-              <dd>¥{{ checkInfo.summary?.totalPrice.toFixed(2) }}</dd>
+              <dd>¥{{ totalPrice.toFixed(2) }}</dd>
             </dl>
             <dl>
               <dt>应付总额：</dt>
-              <dd class="price">{{ checkInfo.summary?.totalPayPrice.toFixed(2) }}</dd>
+              <dd class="price">¥{{ totalPrice.toFixed(2) }}</dd>
             </dl>
           </div>
         </div>
@@ -96,7 +137,7 @@ const submitOrder = () => {
 
 <style scoped lang="scss">
 $xtxColor: #45c191;
-$priceColor: #00ff6a;
+$priceColor: #67b587;
 .xtx-pay-checkout-page {
   margin-top: 20px;
 
