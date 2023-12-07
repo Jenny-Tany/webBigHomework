@@ -6,6 +6,7 @@
 	import { useCartStore } from "@/stores/cartStore";
 	import { useUserStore } from "@/stores/user";
 	import { useRouter } from 'vue-router'
+	import {createOrderAPI} from '@/apis/order'
 
 	import _ from "lodash"; //导入节流函数
 
@@ -67,11 +68,18 @@
 
 	// 订单列表传送
 	const router = useRouter()
-	// const orderList = Object.values(selectedGoods).map(good => good.cardid).join(',');
-	// console.log(orderList);
+	const orderList = selectedGoods.value.map(obj => obj.cardid).join(',');
+	console.log(orderList);
+	// 提交订单完成
+	const createOrder = async () => {
+		const userId = userStore.userInfo;
+		const res = await createOrderAPI({userId, orderList})
+		console.log(`orderres::${res}`);
+	}
 	const toOrder = () => {
 		console.log(111);
 		console.log(selectedGoods.value);
+		createOrder()
 		ElMessage({
   		  message: '成功生成订单',
   		  type: 'success',
