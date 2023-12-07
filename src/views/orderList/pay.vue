@@ -1,5 +1,4 @@
 <script setup>
-const payInfo = {}
 </script>
 
 
@@ -12,10 +11,6 @@ const payInfo = {}
         <div class="tip">
           <p>订单提交成功！请尽快完成支付。</p>
           <p></p>
-        </div>
-        <div class="amount">
-          <span>应付总额：</span>
-          <span>¥{{ payInfo.payMoney?.toFixed(2) }}</span>
         </div>
       </div>
       <!-- 付款方式 -->
